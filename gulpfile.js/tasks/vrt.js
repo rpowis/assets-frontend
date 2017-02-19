@@ -7,6 +7,7 @@ var st = require('st')
 var http = require('http')
 var config = require('../config')
 var backstopConfigGenerator = require('./../util/backstop/configGenerator')
+var checkForAcceptedErrors = require('./../util/backstop/acceptErrors')
 var compLibServer
 
 gulp.task('build-vrt-config', function () {
@@ -43,7 +44,7 @@ gulp.task('vrt-compare', function (done) {
         })
         .catch(function (err) {
           compLibServer.close()
-          done('[FAIL] gulp VRT task failed')
+          checkForAcceptedErrors(done)
         })
     }
   )
