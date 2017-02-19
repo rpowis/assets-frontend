@@ -132,6 +132,7 @@
     }
   },
   "devDependencies": {
-    "gulp-standard": "^8.0.3"
+    "gulp-standard": "^8.0.3",
+    "xml2js": "^0.4.17"
   }
 }
