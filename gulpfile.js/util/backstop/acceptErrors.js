@@ -66,7 +66,11 @@ var getPullRequestComments = function (errors) {
       var statusCode = response.statusCode
 
       if (statusCode !== 200) {
-        reject(new Error('Request Failed. Status Code: ' + statusCode))
+        var msg = 'Request Failed: ' +
+                  statusCode + ' - ' +
+                  response.statusMessage
+
+        reject(new Error(msg))
       }
 
       var rawData = '';
