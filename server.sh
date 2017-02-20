@@ -11,7 +11,7 @@ deps() {
 
 runVrt() {
   # make sure we're not on master
-  BRANCH="${TRAVIS_BRANCH:-$(git branch | grep \* | cut -d ' ' -f2)}"
+  BRANCH="${TRAVIS_PULL_REQUEST_BRANCH:-$(git branch | grep \* | cut -d ' ' -f2)}"
   if [ "$BRANCH" = "master" ]; then
     output "Vrts not run on $BRANCH branch."
     exit 0
