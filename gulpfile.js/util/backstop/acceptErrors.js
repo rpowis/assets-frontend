@@ -53,12 +53,14 @@ var getPullRequestComments = function (errors) {
 
     // TODO: reliable way of getting PR number outside of travis
     var pr = process.env.TRAVIS_PULL_REQUEST || process.env.PR
+    var userAgent = process.env.TRAVIS ? 'Travis' : 'node.js'
+
     var options = {
       hostname: 'api.github.com',
       path: '/repos/rpowis/assets-frontend/issues/' + pr + '/comments',
       method: 'GET',
       headers: {
-        'user-agent': 'node.js'
+        'user-agent': userAgent
       }
     }
 
@@ -68,8 +70,8 @@ var getPullRequestComments = function (errors) {
       if (statusCode !== 200) {
         var msg = 'Request Failed: ' +
                   statusCode + ' - ' +
-                  response.statusMessage +
-                  resonse.req.ClientRequest._headers
+                  response.statusMessage + '\n'
+                  response.headers
 
         reject(new Error(msg))
       }
