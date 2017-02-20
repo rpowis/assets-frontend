@@ -68,7 +68,8 @@ var getPullRequestComments = function (errors) {
       if (statusCode !== 200) {
         var msg = 'Request Failed: ' +
                   statusCode + ' - ' +
-                  response.statusMessage
+                  response.statusMessage +
+                  resonse.req.ClientRequest._headers
 
         reject(new Error(msg))
       }
