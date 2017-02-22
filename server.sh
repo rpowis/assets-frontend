@@ -11,7 +11,7 @@ deps() {
 
 runVrt() {
   # make sure we're not on master
-  BRANCH="${TRAVIS_PULL_REQUEST_BRANCH:-$(git branch | grep \* | cut -d ' ' -f2)}"
+  BRANCH="${TRAVIS_BRANCH:-$(git branch | grep \* | cut -d ' ' -f2)}"
   echo "Current branch: $BRANCH"
 
   if [ "$BRANCH" = "master" ]; then
