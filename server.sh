@@ -12,6 +12,8 @@ deps() {
 runVrt() {
   # make sure we're not on master
   BRANCH="${TRAVIS_PULL_REQUEST_BRANCH:-$(git branch | grep \* | cut -d ' ' -f2)}"
+  echo "Current branch: $BRANCH"
+
   if [ "$BRANCH" = "master" ]; then
     output "Vrts not run on $BRANCH branch."
     exit 0
@@ -23,7 +25,10 @@ runVrt() {
   fi
 
   COMMIT="${HEAD:-$BRANCH}"
+  echo "Current commit: $COMMIT"
+
   BRANCHPOINT=$(git merge-base master HEAD)
+  echo "Branch point: $BRANCHPOINT"
 
   # run VRTs
   git checkout $BRANCHPOINT &&
