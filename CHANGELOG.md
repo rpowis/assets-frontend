@@ -10,6 +10,10 @@ and this project adheres to [Semantic Versioning](http://semver.org/).
 - `standard` formatting for JavaScript [#736]
 - Interaction for visual regression tests [#748]
 
+### Changed
+- Changed the Alpha banner colour to match Beta
+- Youtube-player being weird
+
 ## [2.241.0] - 2017-01-20
 ### Fixed
 - URLs for `govuk_template` assets in nginx error pages [#735]
