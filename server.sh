@@ -16,25 +16,24 @@ runVrt() {
 
   if [ "$BRANCH" = "master" ]; then
     output "Vrts not run on $BRANCH branch."
-    exit 0
+  else
+    # Store some vars for later
+    if [[ $TRAVIS_BRANCH ]]; then
+      HEAD=$TRAVIS_COMMIT
+    fi
+
+    COMMIT="${HEAD:-$BRANCH}"
+    echo "Current commit: $COMMIT"
+
+    BRANCHPOINT=$(git merge-base master HEAD)
+    echo "Branch point: $BRANCHPOINT"
+
+    # run VRTs
+    git checkout $BRANCHPOINT &&
+    npm run vrt:baseline &&
+    git checkout $COMMIT &&
+    npm run vrt:compare
   fi
-
-  # Store some vars for later
-  if [[ $TRAVIS_BRANCH ]]; then
-    HEAD=$TRAVIS_COMMIT
-  fi
-
-  COMMIT="${HEAD:-$BRANCH}"
-  echo "Current commit: $COMMIT"
-
-  BRANCHPOINT=$(git merge-base master HEAD)
-  echo "Branch point: $BRANCHPOINT"
-
-  # run VRTs
-  git checkout $BRANCHPOINT &&
-  npm run vrt:baseline &&
-  git checkout $COMMIT &&
-  npm run vrt:compare
 }
 
 if [[ -n $1 ]]; then
