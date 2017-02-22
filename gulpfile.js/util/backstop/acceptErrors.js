@@ -1,10 +1,12 @@
 var fs = require('fs')
 var path = require('path')
-var https = require('https')
+var gutil = require('gulp-util')
 var xml2js = require('xml2js')
+var parseChangelog = require('changelog-parser')
 
 var parser = new xml2js.Parser()
 var report = path.resolve('vrt-output', 'ci-report', 'component-library-xunit.xml')
+var changelog = path.resolve('CHANGELOG.md')
 
 var readReport = function (file) {
   return new Promise (function (resolve, reject) {
@@ -40,84 +42,47 @@ var findErrors = function (xml) {
   })
 }
 
-var getPullRequestComments = function (errors) {
+var getUnreleasedFromChangelog = function (errors) {
   var data = {
     errors: errors,
-    comments: []
+    changelog: ''
   }
 
-  return new Promise (function (resolve, reject) {
-    if (!errors.length) {
-      resolve(data)
-    }
+  return new Promise(function (resolve, reject) {
+    parseChangelog(changelog, function (err, result) {
+      if(err) {
+        reject(new Error(err))
+      } else {
+        var unreleased = result.versions.filter(function(version) {
+          return version.title.includes('Unreleased')
+        })
 
-    // TODO: reliable way of getting PR number outside of travis
-    var pr = process.env.TRAVIS_PULL_REQUEST || process.env.PR
-    var options = {
-      hostname: 'api.github.com',
-      path: '/repos/rpowis/assets-frontend/issues/' + pr + '/comments',
-      method: 'GET',
-      headers: {
-        'user-agent': 'node.js'
+        data.changelog = unreleased[0].body
+        resolve(data)
       }
-    }
-
-    https.request(options, function(response) {
-      var statusCode = response.statusCode
-
-      if (statusCode !== 200) {
-        var msg = 'Request Failed: ' +
-                  statusCode + ' - ' +
-                  response.statusMessage
-
-        reject(new Error(msg))
-      }
-
-      var rawData = '';
-
-      response.on('data', function (chunk) {
-        rawData += chunk
-      })
-
-      response.on('end', function () {
-        try {
-          // reduce comment bodies to array of strings
-          data.comments = JSON.parse(rawData).map(function(comment) {
-            return comment.body
-          })
-
-          resolve(data)
-        } catch (e) {
-          reject(new Error(e.message))
-        }
-      })
-    }).on('error', function (err) {
-      reject(new Error('Got error: ' + err.message))
-    }).end()
+    })
   })
 }
 
 var findAcceptedErrors = function (data) {
-  if (!data.comments.length || !data.errors.length) {
-    return false
+  if (!data.errors.length) {
+    return true
   }
 
   var notAccepted = data.errors.filter(function (error) {
-    return data.comments.every(function (comment) {
-      var re = new RegExp('accept[\\s\\S]*?vrt[\\s\\S]*?' + error, 'i')
-      return !comment.match(re)
-    })
+    return !data.changelog.includes(error)
   })
 
   if (notAccepted.length) {
-    throw new Error('Failed VRTs not accepted: ' + notAccepted.join(','))
+    var msg = 'ERROR: Failed VRTs not accepted: ' + notAccepted.join(',')
+    throw new Error(gutil.log(gutil.colors.red(msg)))
   }
 }
 
 var acceptErrors = function(cb) {
   readReport(report)
     .then(findErrors)
-    .then(getPullRequestComments)
+    .then(getUnreleasedFromChangelog)
     .then(findAcceptedErrors)
     .catch(function(err) {
       cb(err)
