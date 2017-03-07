@@ -29,7 +29,7 @@
   "author": "HMRC",
   "license": "Apache-2.0",
   "dependencies": {
-    "backstopjs": "^2.3.3",
+    "backstopjs": "github:rpowis/BackstopJS",
     "browser-sync": "^2.4.0",
     "browserify-istanbul": "^0.1.3",
     "browserify-shim": "^3.8.2",
