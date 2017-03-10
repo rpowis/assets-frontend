@@ -12,9 +12,13 @@ deps() {
 runVrt() {
   # make sure we're not on master
   BRANCH="${TRAVIS_BRANCH:-$(git branch | grep \* | cut -d ' ' -f2)}"
-  echo "Current branch: $BRANCH"
+  SLUG="${TRAVIS_REPO_SLUG:-$(git config --local remote.origin.url | cut -d: -f2)}"
+  OWNER=$(echo $SLUG | cut -d/ -f1)
 
-  if [ "$BRANCH" = "master" ]; then
+  echo "Current branch: $BRANCH"
+  echo "From remote: $OWNER"
+
+  if [ "$BRANCH" = "master" ] && [ "$OWNER" = "hmrc" ]; then
     output "Vrts not run on $BRANCH branch."
   else
     # Store some vars for later
