@@ -1,5 +1,15 @@
 #!/bin/bash
 
+trap ctrl_c INT
+
+BRANCH="${TRAVIS_BRANCH:-$(git branch | grep \* | cut -d ' ' -f2)}"
+SLUG="${TRAVIS_REPO_SLUG:-$(git config --local remote.origin.url | cut -d: -f2)}"
+OWNER=$(echo $SLUG | cut -d/ -f1)
+
+ctrl_c() {
+  git checkout $BRANCH
+}
+
 output() {
   printf "\n$1\n"
 }
@@ -10,11 +20,6 @@ deps() {
 }
 
 runVrt() {
-  # make sure we're not on master
-  BRANCH="${TRAVIS_BRANCH:-$(git branch | grep \* | cut -d ' ' -f2)}"
-  SLUG="${TRAVIS_REPO_SLUG:-$(git config --local remote.origin.url | cut -d: -f2)}"
-  OWNER=$(echo $SLUG | cut -d/ -f1)
-
   echo "Current branch: $BRANCH"
   echo "From remote: $OWNER"
 
