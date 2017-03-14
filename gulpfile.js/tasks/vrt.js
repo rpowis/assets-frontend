@@ -43,6 +43,7 @@ gulp.task('vrt-compare', function (done) {
           compLibServer.close()
         })
         .catch(function (err) {
+          console.log(err)
           compLibServer.close()
           checkForAcceptedErrors(done)
         })

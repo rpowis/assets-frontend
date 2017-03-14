@@ -9,9 +9,9 @@ var report = path.resolve('vrt-output', 'ci-report', 'component-library-xunit.xm
 var changelog = path.resolve('CHANGELOG.md')
 
 var readReport = function (file) {
-  return new Promise (function (resolve, reject) {
+  return new Promise(function (resolve, reject) {
     fs.readFile(file, function (err, result) {
-      if(err) {
+      if (err) {
         reject(new Error(err))
       } else {
         resolve(result.toString())
@@ -21,20 +21,20 @@ var readReport = function (file) {
 }
 
 var findErrors = function (xml) {
-  return new Promise (function (resolve, reject) {
+  return new Promise(function (resolve, reject) {
     parser.parseString(xml, function (err, results) {
-      if(err) {
+      if (err) {
         reject(new Error(err))
       } else {
         var tests = results.testsuites['$'].errors
           ? results.testsuites.testsuite[0].testcase
           : []
 
-        var errors = tests.filter(function(test) {
-            return test.error
-          }).map(function(error) {
-            return error['$'].name.replace(/[^a-zA-Z0-9-_]*/, '')
-          })
+        var errors = tests.filter(function (test) {
+          return test.error
+        }).map(function (error) {
+          return error['$'].name.replace(/[^a-zA-Z0-9-_]*/, '')
+        })
 
         resolve(errors)
       }
@@ -50,10 +50,10 @@ var getUnreleasedFromChangelog = function (errors) {
 
   return new Promise(function (resolve, reject) {
     parseChangelog(changelog, function (err, result) {
-      if(err) {
+      if (err) {
         reject(new Error(err))
       } else {
-        var unreleased = result.versions.filter(function(version) {
+        var unreleased = result.versions.filter(function (version) {
           return version.title.includes('Unreleased')
         })
 
@@ -79,12 +79,12 @@ var findAcceptedErrors = function (data) {
   }
 }
 
-var acceptErrors = function(cb) {
+var acceptErrors = function (cb) {
   readReport(report)
     .then(findErrors)
     .then(getUnreleasedFromChangelog)
     .then(findAcceptedErrors)
-    .catch(function(err) {
+    .catch(function (err) {
       cb(err)
     })
 }
