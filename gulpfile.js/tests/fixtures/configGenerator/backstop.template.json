@@ -1,3 +1,4 @@
 {
-  "scenarios": []
+  "scenarios": [],
+  "report": ["browser", "CI"]
 }
